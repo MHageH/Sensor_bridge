@@ -16,6 +16,10 @@ time_t begin =  time(NULL);
 char *RS232_DEVICE = (char*)"/dev/ttyUSB0";
 int baudrate = 57600;
 
+int count = 0;
+
+extern Mavlink_Messages current_messages;
+
 int main(int argc, char ** argv){
 	interface_intialize();
 
@@ -76,6 +80,13 @@ void operation (float timer){
 			}
 		// OLD :: if (Program_counter == 0 || Program_counter == 6) { Program_counter = 1;}
 		if (Program_counter == 0 || Program_counter == 3) { Program_counter = 2;}
+
+		
+		mavlink_local_position_ned_t pos = current_messages.local_position_ned;
+		printf("%i CURRENT POSITION XYZ = [ % .4f , % .4f , % .4f ] \n", count, pos.x, pos.y, pos.z);
+		
+
+		count++;
 	}
 
 // Function Helpers
