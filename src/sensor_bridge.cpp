@@ -1,4 +1,5 @@
 #include "sensor_bridge.h"
+#include <math.h>
 
 mavlink_set_position_target_local_ned_t initial_position;
 
@@ -13,10 +14,15 @@ time_t end;
 time_t begin =  time(NULL);
 
 // Parse command line
-char *RS232_DEVICE = (char*)"/dev/ttyUSB0";
+char *RS232_DEVICE = (char*)"/dev/ttyUSB1";
 int baudrate = 57600;
 
+// Received coordinates count
 int count = 0;
+
+// Fixed Sensor position
+float sensor_position_x = 10;
+float sensor_position_y = 10;
 
 extern Mavlink_Messages current_messages;
 
@@ -27,6 +33,10 @@ int main(int argc, char ** argv){
 
 	serial_start();
 	interface_start();
+
+	// Designed to send orders to STM32F4
+	open_custom_port();
+	//
 
 	printf("Entering while loop \n");
 
@@ -83,8 +93,14 @@ void operation (float timer){
 
 		
 		mavlink_local_position_ned_t pos = current_messages.local_position_ned;
-		printf("%i CURRENT POSITION XYZ = [ % .4f , % .4f , % .4f ] \n", count, pos.x, pos.y, pos.z);
+		//printf("%i CURRENT POSITION XYZ = [ % .4f , % .4f , % .4f ] \n", count, pos.x, pos.y, pos.z);
 		
+
+		// Just to test the ability of STM32F4 to receive the correct position on USART3 (must be changed later to USART1)
+		char phase_buffer[200];
+		send_message("Current Phase = ");
+		send_message(custom_itoa(phase(pos.x, pos.y), phase_buffer));
+		send_message("\n");
 
 		count++;
 	}
@@ -139,4 +155,25 @@ void parse_commandline(int argc, char **argv, char *&uart_name, int &baudrate){
 
 	// Done!
 	return;
-}
+	}
+
+int phase(float drone_position_x, float drone_position_y){
+	float Dx = drone_position_x - sensor_position_x;
+	float Dy = drone_position_y - sensor_position_y;
+
+	return (int)atan(Dy/Dx);
+	}
+int amplitude(float drone_position_x, float drone_position_y){
+	float Dx = drone_position_x - sensor_position_x;
+	float Dy = drone_position_y - sensor_position_y;
+
+	int Distance = sqrt(Dx*Dx + Dy*Dy);
+	int Dmin = 2;
+
+	if (Distance > Dmin){
+		return 0;
+	} else {
+		return (1/(Distance*Distance));
+	}
+
+	}

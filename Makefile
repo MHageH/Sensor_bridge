@@ -12,6 +12,9 @@ INCLUDE = inc/
 # MAVLink library
 MAVLIB = mavlink/include/mavlink/v1.0/
 
+# Libs
+LIBS = -lm
+
 # Linker
 OBJS = $(NAME).o interface.o serial_port.o
 
@@ -21,9 +24,9 @@ $(NAME): $(OBJS)
 	g++ $(OBJS) -o $(NAME) 
 
 $(NAME).o: $(SRC)/$(NAME).cpp
-	g++ $(CFLAGS) -I$(INCLUDE) -I$(MAVLIB) -c $(SRC)/$(NAME).cpp 
-	g++ $(CFLAGS) -I$(INCLUDE) -I$(MAVLIB) -c $(SRC)/interface.cpp
-	g++ $(CFLAGS) -I$(INCLUDE) -I$(MAVLIB) -c $(SRC)/serial_port.cpp
+	g++ $(CFLAGS) -I$(INCLUDE) -I$(MAVLIB) $(LIBS) -c $(SRC)/$(NAME).cpp 
+	g++ $(CFLAGS) -I$(INCLUDE) -I$(MAVLIB) $(LIBS) -c $(SRC)/interface.cpp
+	g++ $(CFLAGS) -I$(INCLUDE) -I$(MAVLIB) $(LIBS) -c $(SRC)/serial_port.cpp
 
 graph: $(NAME)
 	mkdir Graphs
