@@ -37,11 +37,11 @@ void serial_start(void){
 // Serial Read
 int serial_read_message(mavlink_message_t &message){
 
-  msgReceived = mavlink_parse_char(MAVLINK_COMM_1, usart_recv_blocking(USART3), &message, &status);
+    msgReceived = mavlink_parse_char(MAVLINK_COMM_1, usart_recv_blocking(), &message, &status);
 
 	return msgReceived;
 	}
-int usart_recv_blocking(int i){ 
+int usart_recv_blocking(void){ 
     char c;
     read(fd,&c,1);
     return(c);

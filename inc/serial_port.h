@@ -4,9 +4,6 @@
 #include <cstdlib>
 #include <stdio.h>   // Standard input/output definitions
 #include <unistd.h>  // UNIX standard function definitions
-
-#include <common/mavlink.h>
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>                  /* declaration of bzero() */
@@ -14,13 +11,11 @@
 #include <termios.h>
 
 #include <sys/time.h>
-// MOD
 #include <time.h>
-//
 
-#define USART3 3
+#include <common/mavlink.h>
 
-int usart_recv_blocking(int i);
+int usart_recv_blocking(void);
 
 // Initialisation
 void serial_start(void);
