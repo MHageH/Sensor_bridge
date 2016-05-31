@@ -118,6 +118,10 @@ void operation (float timer){
 
 		count++;
 	}
+void test(void){
+	
+}
+
 
 // Function Helpers
 void interface_write_helper(void){
