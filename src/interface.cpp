@@ -94,6 +94,7 @@ void read_messages(void){
 		if(success){
 			switch (message.msgid){
 				case MAVLINK_MSG_ID_HEARTBEAT:{
+					//printf("MAVLINK_MSG_ID_HEARTBEAT received\n");
 					mavlink_msg_heartbeat_decode(&message, &(current_messages.heartbeat));
 					current_messages.time_stamps.heartbeat = get_time_usec();
 					this_timestamps.heartbeat = current_messages.time_stamps.heartbeat;	
@@ -101,7 +102,7 @@ void read_messages(void){
 					}
 
 				case MAVLINK_MSG_ID_LOCAL_POSITION_NED:{
-					printf("LOCAL_POSITION_NED received\n");
+					//printf("MAVLINK_MSG_ID_LOCAL_POSITION_NED received\n");
 					mavlink_msg_local_position_ned_decode(&message, &(current_messages.local_position_ned));
 					current_messages.time_stamps.local_position_ned = get_time_usec();
 					this_timestamps.local_position_ned = current_messages.time_stamps.local_position_ned;
@@ -109,6 +110,7 @@ void read_messages(void){
 					}
 
 				case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:{
+					//printf("MAVLINK_MSG_ID_GLOBAL_POSITION_INT received\n");
 					mavlink_msg_global_position_int_decode(&message, &(current_messages.global_position_int));
 					current_messages.time_stamps.global_position_int = get_time_usec();
 					this_timestamps.global_position_int = current_messages.time_stamps.global_position_int;
@@ -116,6 +118,7 @@ void read_messages(void){
 					}
 
 				case MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED:{
+					//printf("MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED received\n");
 					mavlink_msg_position_target_local_ned_decode(&message, &(current_messages.position_target_local_ned));
 					current_messages.time_stamps.position_target_local_ned = get_time_usec();
 					this_timestamps.position_target_local_ned = current_messages.time_stamps.position_target_local_ned;
@@ -123,6 +126,7 @@ void read_messages(void){
 					}
 
 				case MAVLINK_MSG_ID_HIGHRES_IMU: {
+					//printf("MAVLINK_MSG_ID_HIGHRES_IMU received\n");
 					//gpio_toggle(GPIOD, GPIO13);
 					mavlink_msg_highres_imu_decode(&message, &(current_messages.highres_imu));
 					current_messages.time_stamps.highres_imu = get_time_usec();
@@ -131,6 +135,7 @@ void read_messages(void){
 					}
 
 				case MAVLINK_MSG_ID_ATTITUDE: {
+					//printf("MAVLINK_MSG_ID_ATTITUDE received\n");	
 					mavlink_msg_attitude_decode(&message, &(current_messages.attitude));
 					current_messages.time_stamps.attitude = get_time_usec();
 					this_timestamps.attitude = current_messages.time_stamps.attitude;
