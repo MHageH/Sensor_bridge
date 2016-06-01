@@ -70,24 +70,6 @@ void operation (float timer){
 					set__( 1 , 0, - 2.5, set_point); break;
 			case 2 :
 					set__( 5 , 0, - 5  , set_point); break;
-			case 3 :
-					set__( 10 , 0 , - 5, set_point); break;
-			case 4 :
-					set__( 20 , 0 , - 5, set_point); break; 
-			case 5 :
-					set__( 20 , 10 , - 5, set_point); break;
-			case 6 :
-					set__( 20 , 20 , - 5, set_point); break; 
-			case 7 :
-					set__( 10 , 20 , - 5, set_point); break; 
-			case 8 :
-					set__( 0 , 20 , - 5, set_point); break;
-			case 9 :
-					set__( 0 , 10 , - 5, set_point); break;
-			case 10 :
-					set__( 0 , 0 , - 5, set_point); break;
-			/* OLD  ::
-			*/
 			default : break;
 		}
 			end =  time(NULL);
@@ -97,30 +79,19 @@ void operation (float timer){
 				printf("Operation : %d \n", Program_counter);
 				Program_counter++;
 			}
-		// OLD :: if (Program_counter == 0 || Program_counter == 6) { Program_counter = 1;}
-		if (Program_counter == 0 || Program_counter == 11) { Program_counter = 2;}
+		if (Program_counter == 0 || Program_counter == 3) { Program_counter = 2;}
 
 		
 		mavlink_local_position_ned_t pos = current_messages.local_position_ned;
 		//printf("%i CURRENT POSITION XYZ = [ % .4f , % .4f , % .4f ] \n", count, pos.x, pos.y, pos.z);
 		
-
 		// Just to test the ability of STM32F4 to receive the correct position on USART3 (must be changed later to USART1)
 		printf("Phase = %d\n", phase(pos.x, pos.y));
 		printf("Amplitude = %f\n", amplitude(pos.x, pos.y));
 		
-		/*
-		char phase_buffer[200];
-		send_message("Current Phase = ");
-		send_message(custom_itoa(phase(pos.x, pos.y), phase_buffer));
-		send_message("\n");
-		*/
-
 		count++;
 	}
-void test(void){
-	
-}
+
 
 
 // Function Helpers
