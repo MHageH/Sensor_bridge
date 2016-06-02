@@ -109,6 +109,10 @@ void operation (float timer){
 		//printf("%i CURRENT POSITION XYZ = [ % .4f , % .4f , % .4f ] \n", count, pos.x, pos.y, pos.z);
 		
 		// Just to test the ability of STM32F4 to receive the correct position on USART3 (must be changed later to USART1)
+		printf("\n Phase at M = %d\n", phase(m_x_position, m_y_position));
+		printf("Tan(Phase) at M = %f\n", tan(phase(m_x_position, m_y_position)));
+		printf("Y0 at M = %f\n\n", m_y_position - m_x_position*tan(phase(m_x_position, m_y_position)) + sep* tan(phase(m_x_position, m_y_position)));
+
 		printf("Phase = %d\n", phase(pos.x, pos.y));
 		printf("Amplitude = %f\n", amplitude(pos.x, pos.y));
 		
