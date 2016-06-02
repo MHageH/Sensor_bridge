@@ -25,6 +25,7 @@ float m_y_position = 0;
 int position_lock = 0;
 float sep = 0;
 float Amplitude = 0.025;
+int Phi = 0;
 
 // Fixed Sensor position
 float sensor_position_x = 10;
@@ -80,18 +81,24 @@ void operation (float timer){
 			case 2 :
 					set__( 5 , 0, - 5  , set_point); break;
 			case 3 :
-				if(amplitude(pos.x, pos.y) >= Amplitude){
+				if(amplitude(pos.x, pos.y)*1000 >= Amplitude*1000){
 					mavlink_local_position_ned_t local_position = current_messages.local_position_ned;
 					set__(local_position.x, local_position.y, -5, set_point); break;
 					sep = 0;
 				} else {
 					if (position_lock == 0){
 						m_x_position = pos.x;
+						//printf("m_x_position set to : %f\n", m_x_position);
 						m_y_position = pos.y;
+						//printf("m_y_position set to : %f\n", m_y_position);
 						sep = m_x_position;
+						//printf("SEP set to : %f\n", sep);
+						
+						Phi = phase(m_x_position, m_y_position);
+						//printf("Phase locked to : %d\n", Phi);
 						position_lock = 1;
 					}
-					set__(sep, m_y_position - m_x_position*tan(phase(m_x_position, m_y_position)) + sep* tan(phase(m_x_position, m_y_position)), -5, set_point);
+					set__(sep, m_y_position - m_x_position*tanf(Phi*(M_PI/180)) + sep* tanf(Phi*(M_PI/180)), -5, set_point);
 					sep++;
 					break;
 				}
@@ -108,13 +115,13 @@ void operation (float timer){
 		
 		//printf("%i CURRENT POSITION XYZ = [ % .4f , % .4f , % .4f ] \n", count, pos.x, pos.y, pos.z);
 		
-		// Just to test the ability of STM32F4 to receive the correct position on USART3 (must be changed later to USART1)
-		printf("\n Phase at M = %d\n", phase(m_x_position, m_y_position));
-		printf("Tan(Phase) at M = %f\n", tan(phase(m_x_position, m_y_position)));
-		printf("Y0 at M = %f\n\n", m_y_position - m_x_position*tan(phase(m_x_position, m_y_position)) + sep* tan(phase(m_x_position, m_y_position)));
+		// Just to test the ability of STM32F4 to receive the correct position on USART3 (must be changed later to USART1
+		printf("\n Phase at M = %d\n", Phi);
+		printf("Tan(Phase) at M = %f\n", tanf(Phi*(M_PI/180)));
+		printf("Y0 at M = %f\n\n", m_y_position - m_x_position*tanf(Phi*(M_PI/180)) + 5* tanf(Phi*(M_PI/180)));
 
-		printf("Phase = %d\n", phase(pos.x, pos.y));
-		printf("Amplitude = %f\n", amplitude(pos.x, pos.y));
+		// printf("Phase = %d\n", phase(pos.x, pos.y));
+		printf("Amplitude*1000 = %f\n", 1000*amplitude(pos.x, pos.y));
 		
 		count++;
 	}
