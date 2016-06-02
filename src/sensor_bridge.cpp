@@ -24,7 +24,7 @@ float m_x_position = 0;
 float m_y_position = 0;
 int position_lock = 0;
 float sep = 0;
-float Amplitude = 0.01;
+float Amplitude = 0.025;
 
 // Fixed Sensor position
 float sensor_position_x = 10;
