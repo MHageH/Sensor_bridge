@@ -20,6 +20,12 @@ int baudrate = 57600;
 // Received coordinates count
 int count = 0;
 
+float m_x_position = 0;
+float m_y_position = 0;
+int position_lock = 0;
+float sep = 0;
+float Amplitude = 0.01;
+
 // Fixed Sensor position
 float sensor_position_x = 10;
 float sensor_position_y = 10;
@@ -59,17 +65,36 @@ void operation (float timer){
 	mavlink_set_position_target_local_ned_t set_point;
 	mavlink_set_position_target_local_ned_t ip = initial_position;
 
+	mavlink_local_position_ned_t pos = current_messages.local_position_ned;
+
 	switch(Program_counter){
 			case 0 : 
 
 				enable_offboard_control();
 				printf("Offboard control Enabled \n");
+				Program_counter = 1;
 				break;
 			case 1 :
 					printf("Set point 1 \n");
 					set__( 1 , 0, - 2.5, set_point); break;
 			case 2 :
 					set__( 5 , 0, - 5  , set_point); break;
+			case 3 :
+				if(amplitude(pos.x, pos.y) >= Amplitude){
+					mavlink_local_position_ned_t local_position = current_messages.local_position_ned;
+					set__(local_position.x, local_position.y, -5, set_point); break;
+					sep = 0;
+				} else {
+					if (position_lock == 0){
+						m_x_position = pos.x;
+						m_y_position = pos.y;
+						sep = m_x_position;
+						position_lock = 1;
+					}
+					set__(sep, m_y_position - m_x_position*tan(phase(m_x_position, m_y_position)) + sep* tan(phase(m_x_position, m_y_position)), -5, set_point);
+					sep++;
+					break;
+				}
 			default : break;
 		}
 			end =  time(NULL);
@@ -78,11 +103,9 @@ void operation (float timer){
 				begin = time(NULL);
 				printf("Operation : %d \n", Program_counter);
 				Program_counter++;
+			if (Program_counter == 0 || Program_counter == 4) { Program_counter = 3;}
 			}
-		if (Program_counter == 0 || Program_counter == 3) { Program_counter = 2;}
-
 		
-		mavlink_local_position_ned_t pos = current_messages.local_position_ned;
 		//printf("%i CURRENT POSITION XYZ = [ % .4f , % .4f , % .4f ] \n", count, pos.x, pos.y, pos.z);
 		
 		// Just to test the ability of STM32F4 to receive the correct position on USART3 (must be changed later to USART1)
@@ -150,8 +173,8 @@ int phase(float drone_position_x, float drone_position_y){
 	float Dx = drone_position_x - sensor_position_x;
 	float Dy = drone_position_y - sensor_position_y;
 
-	printf("Delta x = %f,", Dx);
-	printf("Delta y = %f \n", Dy);
+	//printf("Delta x = %f,", Dx);
+	//printf("Delta y = %f \n", Dy);
 
 	float conversion = 180 / M_PI;
 
