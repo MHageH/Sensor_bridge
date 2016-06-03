@@ -20,16 +20,16 @@ int baudrate = 57600;
 // Received coordinates count
 int count = 0;
 
-float m_x_position = 0;
-float m_y_position = 0;
-int position_lock = 0;
-float sep = 0;
-float Amplitude = 0.025;
-int Phi = 0;
+extern float m_x_position;
+extern float m_y_position;
+extern int position_lock;
+extern float sep;
+extern float Amplitude;
+extern int Phi;
 
 // Fixed Sensor position
-float sensor_position_x = 10;
-float sensor_position_y = 10;
+extern float sensor_position_x;
+extern float sensor_position_y;
 
 extern Mavlink_Messages current_messages;
 
@@ -98,15 +98,15 @@ void operation (float timer){
 						//printf("Phase locked to : %d\n", Phi);
 						position_lock = 1;
 					}
-					set__(sep, m_y_position - m_x_position*tanf(Phi*(M_PI/180)) + sep* tanf(Phi*(M_PI/180)), -5, set_point);
+					// OLD :: set__(sep, m_y_position - m_x_position*tanf(Phi*(M_PI/180)) + sep* tanf(Phi*(M_PI/180)), -5, set_point);
+					set__(sep, m_y_position - m_x_position*tangent_m_f(Phi) + sep* tangent_m_f(Phi), -5, set_point);
 					sep++;
 					break;
 				}
 			default : break;
 		}
 			end =  time(NULL);
-				//printf("Time lapse : %d \n", end - begin);
-		if ((end - begin) >= timer){
+			if ((end - begin) >= timer){
 				begin = time(NULL);
 				printf("Operation : %d \n", Program_counter);
 				Program_counter++;
@@ -117,9 +117,9 @@ void operation (float timer){
 		
 		// Just to test the ability of STM32F4 to receive the correct position on USART3 (must be changed later to USART1
 		printf("\n Phase at M = %d\n", Phi);
-		printf("Tan(Phase) at M = %f\n", tanf(Phi*(M_PI/180)));
-		printf("Y0 at M = %f\n\n", m_y_position - m_x_position*tanf(Phi*(M_PI/180)) + 5* tanf(Phi*(M_PI/180)));
-
+		// OLD :: printf("Y0 at M = %f\n\n", m_y_position - m_x_position*tanf(Phi*(M_PI/180)) + 5* tanf(Phi*(M_PI/180)));
+		printf("Y0 at M = %f\n\n", m_y_position - m_x_position*tangent_m_f(Phi) + 5* tangent_m_f(Phi));
+		
 		// printf("Phase = %d\n", phase(pos.x, pos.y));
 		printf("Amplitude*1000 = %f\n", 1000*amplitude(pos.x, pos.y));
 		
@@ -180,30 +180,3 @@ void parse_commandline(int argc, char **argv, char *&uart_name, int &baudrate){
 	return;
 	}
 
-int phase(float drone_position_x, float drone_position_y){
-	float Dx = drone_position_x - sensor_position_x;
-	float Dy = drone_position_y - sensor_position_y;
-
-	//printf("Delta x = %f,", Dx);
-	//printf("Delta y = %f \n", Dy);
-
-	float conversion = 180 / M_PI;
-
-	return (int)(atan(Dy/Dx)*conversion);
-	}
-	
-float amplitude(float drone_position_x, float drone_position_y){
-	float Dx = drone_position_x - sensor_position_x;
-	float Dy = drone_position_y - sensor_position_y;
-
-	float Distance = sqrt(Dx*Dx + Dy*Dy);
-	printf("Distance = %f \n", Distance);
-	int Dmin = 15;
-
-	if (Distance > Dmin){
-		return 0;
-	} else {
-		return (1/(Distance*Distance));
-	}
-
-	}
